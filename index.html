@@ -37,19 +37,20 @@ h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(1.6rem,7vw,
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
 /* HUD */
-.hud{display:flex;gap:0;margin-bottom:18px;border:1px solid var(--border);animation:appear .3s ease both}
-.hud-stat{display:flex;flex-direction:column;align-items:center;flex:1;min-width:40px;padding:8px 4px;border-right:1px solid var(--border)}
-.hud-right{border-left:none!important}
-.hud-lbl{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
-.hud-bar{width:80%;height:2px;background:var(--border);overflow:hidden;margin-bottom:3px}
+.hud{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);margin-bottom:18px;animation:appear .3s ease both}
+.hud-stat{display:flex;flex-direction:column;align-items:center;padding:10px 8px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.hud-stat:nth-child(2n){border-right:none}
+.hud-stat:nth-child(3),.hud-stat:nth-child(4){border-bottom:none}
+.hud-lbl{font-size:.58rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;text-align:center}
+.hud-bar{width:70%;height:2px;background:var(--border);overflow:hidden;margin-bottom:4px}
 .hud-fill{height:100%;transition:width .4s}
 .fa{background:#2d6a4f}.fc{background:#92400e}.fs{background:#1e40af}.fd{background:var(--red)}
-.hud-val{font-size:.6rem;color:#1A1818;font-weight:500}
-.hud-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:3px;padding:8px;flex-shrink:0;border-left:1px solid var(--border)}
-.hud-comp{font-size:.56rem;color:#1A1818;letter-spacing:.05em;font-weight:500}
-.hud-inv{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
-.inv-pip{font-size:.52rem;border:1px solid var(--border);padding:2px 5px;color:var(--muted)}
-.hud-pp{font-size:.54rem;color:var(--muted);text-align:right;margin-top:2px}
+.hud-val{font-size:.65rem;color:#1A1818;font-weight:500}
+.hud-right{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-top:1px solid var(--border);flex-wrap:wrap;gap:6px}
+.hud-comp{font-size:.6rem;color:#1A1818;font-weight:500}
+.hud-inv{display:flex;gap:4px;flex-wrap:wrap}
+.inv-pip{font-size:.55rem;border:1px solid var(--border);padding:2px 6px;color:var(--muted)}
+.hud-pp{font-size:.58rem;color:var(--muted)}
 .hud-pp span{color:#1A1818;font-weight:500}
 
 /* progress */
@@ -270,10 +271,10 @@ function hud(){
   const invH=S.inv.map(i=>`<span class="inv-pip">${i}</span>`).join('');
   const dom=S.auth>=S.crea&&S.auth>=S.secr?'✒ Перо':S.crea>=S.secr?'🖌 Пензель':'👁 Тінь';
   return `<div class="hud">
-    <div class="hud-stat"><span class="hud-lbl">✒ Авт.</span><div class="hud-bar"><div class="hud-fill fa" style="width:${p(S.auth)}"></div></div><span class="hud-val">${S.auth}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">🖌 Тв.</span><div class="hud-bar"><div class="hud-fill fc" style="width:${p(S.crea)}"></div></div><span class="hud-val">${S.crea}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">👁 Скр.</span><div class="hud-bar"><div class="hud-fill fs" style="width:${p(S.secr)}"></div></div><span class="hud-val">${S.secr}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">⚠ Небезп.</span><div class="hud-bar"><div class="hud-fill fd" style="width:${S.danger}%"></div></div><span class="hud-val">${S.danger}%</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Авторитет</span><div class="hud-bar"><div class="hud-fill fa" style="width:${p(S.auth)}"></div></div><span class="hud-val">${S.auth}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Творчість</span><div class="hud-bar"><div class="hud-fill fc" style="width:${p(S.crea)}"></div></div><span class="hud-val">${S.crea}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Скритність</span><div class="hud-bar"><div class="hud-fill fs" style="width:${p(S.secr)}"></div></div><span class="hud-val">${S.secr}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Небезпека</span><div class="hud-bar"><div class="hud-fill fd" style="width:${S.danger}%"></div></div><span class="hud-val">${S.danger}%</span></div>
     <div class="hud-right">${comp}<div class="hud-inv">${invH}</div><div class="hud-pp">Стиль: <span>${dom}</span></div></div>
   </div>`;
 }
