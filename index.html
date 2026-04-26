@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Шевченко · Шлях Волі</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#090806;--gold:#c9a96e;--gold-lt:#e8d5b0;--text:#cec3ac;--muted:#685e4f;--border:#221e14;--hover:#1a1610;--red:#8b2020;--green:#7a9e6e}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Arial',sans-serif;background:linear-gradient(180deg,#0f0f1a,#1a1a2e);color:#fff;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;font-size:15px;line-height:1.7}
+@media(min-width:480px){body{font-size:16px}}
+@media(min-width:800px){body{font-size:17px}}
+.game-container{max-width:500px;width:90%;background:rgba(20,20,35,.95);padding:20px;border-radius:20px;box-shadow:0 0 40px rgba(0,0,0,.5);margin:24px auto 64px}
+#page-header{text-align:center;padding:14px 0 12px;border-bottom:1px solid var(--border);margin-bottom:20px}
+#page-header h1{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,5vw,1.6rem);color:var(--gold-lt);font-weight:700;margin-bottom:6px}
+#page-header p{font-size:clamp(.8rem,2.8vw,.9rem);color:var(--muted);line-height:1.7}
+#root{width:100%}
+h1{font-size:20px;margin-bottom:10px;color:#a29bfe}
+.stats{font-size:14px;margin-bottom:10px;opacity:.8;padding:8px 0;border-bottom:1px solid var(--border)}
+.stats span{color:var(--gold-lt);font-weight:bold;transition:color .3s}
+.stats span.bump{color:#a29bfe}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 8px rgba(201,169,110,.3)}50%{box-shadow:0 0 20px rgba(201,169,110,.7)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* HUD */
+.hud{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding:10px 12px;border:1px solid var(--border);border-radius:2px;background:#0d0b08;animation:appear .3s ease both}
+.hud-stat{display:flex;flex-direction:column;align-items:center;flex:1;min-width:50px}
+.hud-lbl{font-size:.54rem;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.hud-bar{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:3px}
+.hud-fill{height:100%;border-radius:2px;transition:width .4s}
+.fa{background:var(--green)}.fc{background:var(--gold)}.fs{background:#6e8ea0}.fd{background:var(--red)}
+.hud-val{font-size:.6rem;color:var(--text)}
+.hud-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:3px;margin-left:6px;flex-shrink:0}
+.hud-comp{font-size:.58rem;color:var(--gold);letter-spacing:.05em}
+.hud-inv{display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.inv-pip{font-size:.54rem;border:1px solid var(--border);padding:2px 5px;border-radius:2px;color:var(--muted)}
+.hud-pp{font-size:.56rem;color:var(--muted);text-align:right;margin-top:2px}
+.hud-pp span{color:var(--gold)}
+
+/* progress */
+.progress{margin-bottom:18px}
+.prog-track{display:flex;align-items:center;margin-bottom:6px}
+.prog-dot{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--border);background:transparent;flex-shrink:0;transition:background .3s,border-color .3s,box-shadow .3s}
+.prog-dot.done{background:var(--muted);border-color:var(--muted)}
+.prog-dot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,169,110,.4)}
+.prog-seg{flex:1;height:1px;background:var(--border);margin:0 7px}
+.prog-lbl{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+
+/* title */
+.title-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:82vh;text-align:center;padding:24px 0;animation:appear .6s ease both}
+.title-eyebrow{font-size:clamp(.65rem,2.2vw,.75rem);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+.title-name{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(2.8rem,14vw,4.4rem);color:var(--gold-lt);line-height:1.05;margin-bottom:8px}
+.title-sub{font-family:'Playfair Display',serif;font-size:clamp(.88rem,3.8vw,1.15rem);color:var(--gold);letter-spacing:.2em;text-transform:uppercase;margin-bottom:36px}
+.title-rule{width:60px;border:none;border-top:1px solid var(--muted);margin:0 auto 24px;opacity:.45}
+.title-blurb{font-size:clamp(.8rem,2.8vw,.9rem);color:var(--muted);line-height:1.9;max-width:380px;margin-bottom:16px}
+.mechanic-box{border:1px solid var(--border);border-radius:2px;padding:14px 16px;margin-bottom:32px;max-width:380px;text-align:left}
+.mechanic-title{font-size:.65rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.mechanic-row{font-size:.8rem;color:var(--muted);line-height:1.8}
+.mechanic-row span{color:var(--gold-lt)}
+.btn-start{background:#6c5ce7;color:#fff;border:none;width:100%;min-height:54px;padding:12px 48px;font-family:'Playfair Display',serif;font-size:clamp(.95rem,3vw,1.05rem);letter-spacing:.06em;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;border-radius:12px;margin-top:10px}
+.btn-start:hover,.btn-start:active{background:#a29bfe;transform:scale(1.03)}
+
+/* companion */
+.select-wrap{animation:appear .4s ease both}
+.select-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.2rem,5vw,1.4rem);color:var(--gold-lt);margin-bottom:8px}
+.select-sub{font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.8}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:380px){.comp-grid{grid-template-columns:1fr}}
+.btn-comp{background:#6c5ce7;border:none;color:#fff;padding:13px 12px;text-align:left;cursor:pointer;font-family:'EB Garamond',serif;font-size:.85rem;line-height:1.5;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;border-radius:12px;margin-top:10px}
+.btn-comp:hover,.btn-comp:active{background:#a29bfe;transform:scale(1.03)}
+.comp-name{font-family:'Playfair Display',serif;color:var(--gold-lt);display:block;margin-bottom:2px;font-size:.9rem}
+.comp-role{color:var(--gold);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:4px}
+.comp-skill{color:var(--muted);font-size:.73rem;line-height:1.5}
+.btn-skip{background:transparent;border:none;color:var(--muted);font-size:.74rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'EB Garamond',serif;padding:4px 0}
+.btn-skip:hover{color:var(--gold)}
+
+/* scene */
+.scene-wrap{animation:appear .35s ease both}
+.scene-top{display:flex;flex-direction:column;gap:4px;padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid var(--border)}
+@media(min-width:480px){.scene-top{flex-direction:row;align-items:baseline;justify-content:space-between;gap:0}}
+.game-lbl{font-size:clamp(.62rem,2vw,.72rem);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stage-tag{font-size:clamp(.66rem,2vw,.76rem);color:var(--gold);letter-spacing:.07em}
+.scene-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.2rem,5.5vw,1.55rem);color:var(--gold-lt);margin-bottom:16px;line-height:1.3}
+.scene-body{font-size:clamp(.92rem,3vw,1rem);line-height:clamp(1.8,2.5vw,1.95);white-space:pre-line;margin-bottom:26px}
+.choices{display:flex;flex-direction:column;gap:10px}
+.btn-choice{background:#6c5ce7;border:none;color:#fff;width:100%;min-height:52px;padding:12px 18px;text-align:left;cursor:pointer;font-family:'EB Garamond',serif;font-size:clamp(.92rem,3vw,.98rem);line-height:1.55;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;border-radius:12px;margin-top:10px;position:relative}
+.btn-choice:hover,.btn-choice:active{background:#a29bfe;transform:scale(1.03)}
+.hint{display:block;font-size:.65rem;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.pp-pen{color:#ffeaa7}.pp-quill{color:#b8f5b0}
+.danger-warn{margin-top:12px;padding:10px 14px;border:1px solid var(--red);border-radius:2px;font-size:.75rem;color:#c47070;line-height:1.6}
+
+/* heraldry mini-game */
+.hg-box{background:#0d0b08;border:1px solid var(--border);border-radius:2px;padding:18px;margin-bottom:22px}
+.hg-head{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.hg-desc{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.hg-prog-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden}
+.hg-prog-bar{height:100%;background:var(--gold);border-radius:2px;transition:width .4s}
+.hg-counter{font-size:.7rem;color:var(--muted);margin-bottom:14px}
+.hg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(min-width:480px){.hg-grid{grid-template-columns:repeat(3,1fr)}}
+.hg-frag{background:transparent;border:1px dashed var(--muted);color:var(--muted);padding:14px 10px;cursor:pointer;font-family:'EB Garamond',serif;text-align:center;border-radius:2px;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:5px}
+.hg-frag:hover{border-color:var(--gold);color:var(--text)}
+.hg-frag.restored{border-style:solid;border-color:var(--gold);background:#1a1610;color:var(--gold-lt);cursor:default;animation:pulse .5s ease}
+.hg-icon{font-size:1.4rem;line-height:1}
+.hg-name{font-family:'Playfair Display',serif;font-size:.82rem}
+.hg-sub{font-size:.65rem;color:var(--muted)}
+.hg-frag.restored .hg-sub{color:var(--gold)}
+
+/* rhythm mini-game */
+.rg-box{background:#0d0b08;border:1px solid var(--border);border-radius:2px;padding:20px;margin-bottom:22px;text-align:center}
+.rg-head{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.rg-desc{font-size:.8rem;color:var(--muted);margin-bottom:18px;line-height:1.7}
+.rg-stage{height:90px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.rg-note{font-size:3rem;color:var(--muted);transition:all .15s;user-select:none}
+.rg-note.rg-active{color:var(--gold);text-shadow:0 0 24px rgba(201,169,110,.7);transform:scale(1.3);animation:pulse .6s infinite}
+.rg-note.rg-hit{color:var(--green);transform:scale(1.5)}
+.rg-note.rg-miss{color:var(--red);transform:scale(.8);animation:shake .3s ease}
+.rg-timer-wrap{height:4px;background:var(--border);border-radius:2px;margin-bottom:14px;overflow:hidden}
+.rg-bar{height:100%;background:var(--gold);border-radius:2px;width:0%}
+.rg-status{font-size:.78rem;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;min-height:20px}
+.rg-score{font-family:'Playfair Display',serif;color:var(--gold-lt);font-size:1.05rem;margin-bottom:18px}
+.rg-hit-btn{background:#6c5ce7;color:#fff;border:none;width:100%;min-height:58px;padding:12px 32px;font-family:'Playfair Display',serif;font-size:1.1rem;cursor:pointer;border-radius:12px;letter-spacing:.06em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;user-select:none;margin-top:10px}
+.rg-hit-btn:hover{background:#a29bfe;transform:scale(1.03)}
+.rg-hit-btn:active{background:#a29bfe;transform:scale(.97)}
+
+/* cipher */
+.cipher-box{background:#0d0b08;border:1px solid var(--border);border-radius:2px;padding:18px;margin-bottom:22px}
+.cipher-head{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cipher-verse{font-family:'Playfair Display',serif;font-style:italic;color:var(--gold-lt);font-size:.97rem;line-height:1.9;margin-bottom:12px;white-space:pre-line;border-left:2px solid var(--gold);padding-left:14px}
+.cipher-clue{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.cipher-inp{background:transparent;border:none;border-bottom:1px solid var(--muted);color:var(--gold-lt);font-family:'EB Garamond',serif;font-size:1.05rem;padding:4px 0;width:200px;outline:none;letter-spacing:.1em;text-transform:uppercase}
+.cipher-inp::placeholder{color:var(--muted);text-transform:none;letter-spacing:0}
+.cipher-fb{font-size:.78rem;height:18px;margin-top:6px}
+.cipher-fb.ok{color:var(--green)}.cipher-fb.err{color:#c47070}
+.cipher-btns{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:14px}
+.btn-check{background:#6c5ce7;border:none;color:#fff;padding:12px 18px;cursor:pointer;font-family:'EB Garamond',serif;font-size:.85rem;border-radius:12px;transition:.2s;margin-top:10px}
+.btn-check:hover{background:#a29bfe;transform:scale(1.03)}
+.btn-skip-c{background:transparent;border:none;color:var(--muted);padding:0;cursor:pointer;font-family:'EB Garamond',serif;font-size:.74rem;text-decoration:underline;text-underline-offset:3px}
+.btn-skip-c:hover{color:var(--gold)}
+.cipher-item-hint{font-size:.76rem;color:var(--green);margin-top:10px;border-left:2px solid var(--green);padding-left:10px}
+
+/* conscience */
+.conscience{margin-bottom:20px;display:flex;flex-direction:column;gap:8px}
+.spirit{padding:10px 14px;border-left:2px solid var(--border);font-style:italic;color:var(--muted);font-size:.9rem;line-height:1.7}
+.spirit.lit{border-left-color:var(--gold);color:var(--gold-lt)}
+
+/* map */
+.map-box{background:#0d0b08;border:1px solid var(--border);border-radius:2px;padding:16px;margin-bottom:20px}
+.map-head{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.map-sub{font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.cities{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.city-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 12px;cursor:pointer;font-family:'EB Garamond',serif;font-size:.84rem;border-radius:2px;transition:all .2s}
+.city-btn.lit{border-color:var(--gold);color:var(--gold-lt);background:#1a1610}
+.city-btn:hover:not(.lit){border-color:var(--muted);color:var(--text)}
+.map-count{font-size:.72rem;color:var(--muted)}
+
+/* message */
+.msg-head{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.msg-sub{font-size:.78rem;color:var(--muted);margin-bottom:10px;line-height:1.6}
+.msg-inp{width:100%;background:transparent;border:1px solid var(--border);color:var(--text);font-family:'EB Garamond',serif;font-size:.95rem;padding:12px 14px;border-radius:2px;resize:vertical;min-height:80px;outline:none;line-height:1.6;transition:border-color .2s;margin-bottom:20px}
+.msg-inp:focus{border-color:var(--gold)}
+.msg-inp::placeholder{color:var(--muted)}
+.gallery-box{background:#0d0b08;border:1px solid var(--border);border-radius:2px;padding:14px;margin-bottom:20px}
+.gallery-head{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.gallery-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;color:var(--muted);font-style:italic;line-height:1.6}
+.gallery-item:last-child{border-bottom:none}
+
+/* ending */
+.ending-wrap{animation:appear .5s ease both}
+.end-badge{font-size:clamp(.62rem,2vw,.7rem);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.end-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.6rem,7vw,2.1rem);color:var(--gold-lt);margin-bottom:22px;line-height:1.2}
+.end-rule{border:none;border-top:1px solid var(--border);margin-bottom:22px}
+.end-body{font-size:clamp(.92rem,3vw,1rem);line-height:2;white-space:pre-line;margin-bottom:26px}
+.end-poem{border-left:2px solid var(--gold);padding:4px 0 4px 18px;margin:18px 0;font-style:italic;color:var(--gold-lt);opacity:.85;white-space:pre-line}
+.end-stats{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px;padding:14px;border:1px solid var(--border);border-radius:2px}
+.es{display:flex;flex-direction:column;gap:3px}
+.es-lbl{font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.es-val{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--gold-lt)}
+.end-epilogue{font-size:.87rem;color:var(--muted);border-left:2px solid var(--border);padding-left:14px;margin-bottom:26px;line-height:1.8}
+.msg-saved{font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:20px;padding:10px 14px;border:1px solid var(--border);border-radius:2px;line-height:1.7}
+.btn-restart{background:#6c5ce7;border:none;color:#fff;width:100%;min-height:52px;padding:12px 36px;cursor:pointer;font-family:'Playfair Display',serif;font-size:clamp(.88rem,2.5vw,.95rem);letter-spacing:.1em;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;border-radius:12px;margin-top:10px}
+.btn-restart:hover,.btn-restart:active{background:#a29bfe;transform:scale(1.03)}
+</style>
+</head>
+<body>
+<div class="game-container">
+<div class="stats">
+  🎨 Творчість: <span id="stat-art">0</span> |
+  ✍️ Слово: <span id="stat-word">0</span> |
+  ⚠️ Підозра: <span id="stat-danger">0</span>%
+</div>
+<div id="page-header">
+<h1>🎮 Шевченко: Шлях Волі</h1>
+<p>Ти — Тарас Шевченко. Твій вибір визначить долю народу.</p>
+</div>
+<div id="root"></div>
+</div>
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────
+let S={auth:0,crea:0,secr:0,danger:0,companion:null,inv:[],litCities:[],savedItem:null,savedMsg:''};
+const STAGES=['Качанівка','Київ','Полтавщина','Дніпро'];
+const ALL_CITIES=['Качанівка','Чернігів','Київ','Полтавщина','Дніпро','Канів'];
+const COMPANIONS={
+  kostomаrov:{name:'Микола Костомаров',role:'Історик',skill:'Архівіст: знаходить приховані документи'},
+  kulish:{name:'Пантелеймон Куліш',role:'Видавець',skill:'Друкарський станок: копіює вірші в дорозі'},
+  hulak:{name:'Микола Гулак',role:'Правознавець',skill:'Залізний захист: знижує небезпеку при патрулях'},
+  zakrevska:{name:'Ганна Закревська',role:'Зв\'язкова',skill:'Світський етикет: відволікає охорону та господарів'},
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────────
+const root=document.getElementById('root');
+function r(html){root.innerHTML=html;window.scrollTo({top:0,behavior:'instant'})}
+function mod(a,c,s,d){
+  S.auth=Math.min(10,S.auth+(a||0));
+  S.crea=Math.min(10,S.crea+(c||0));
+  S.secr=Math.min(10,S.secr+(s||0));
+  S.danger=Math.min(100,Math.max(0,S.danger+(d||0)));
+  updateStats();
+}
+function updateStats(){
+  const fields=[['stat-art',S.crea],['stat-word',S.auth],['stat-danger',S.danger]];
+  fields.forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(el.textContent!=String(val)){
+      el.textContent=val;
+      el.classList.add('bump');
+      setTimeout(()=>el.classList.remove('bump'),400);
+    }
+  });
+}
+function addInv(item){if(!S.inv.includes(item))S.inv.push(item)}
+function visitCity(name){if(!S.litCities.includes(name))S.litCities.push(name)}
+function hasInv(item){return S.inv.includes(item)}
+
+function hud(){
+  if(!S.companion&&S.auth===0&&S.crea===0)return'';
+  const p=v=>Math.round(v*10)+'%';
+  const comp=S.companion?`<span class="hud-comp">${COMPANIONS[S.companion].name.split(' ')[1]}</span>`:'';
+  const invH=S.inv.map(i=>`<span class="inv-pip">${i}</span>`).join('');
+  const dom=S.auth>=S.crea&&S.auth>=S.secr?'✒ Перо':S.crea>=S.secr?'🖌 Пензель':'👁 Тінь';
+  return `<div class="hud">
+    <div class="hud-stat"><span class="hud-lbl">Авторитет</span><div class="hud-bar"><div class="hud-fill fa" style="width:${p(S.auth)}"></div></div><span class="hud-val">${S.auth}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Творчість</span><div class="hud-bar"><div class="hud-fill fc" style="width:${p(S.crea)}"></div></div><span class="hud-val">${S.crea}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Скритність</span><div class="hud-bar"><div class="hud-fill fs" style="width:${p(S.secr)}"></div></div><span class="hud-val">${S.secr}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">Небезпека</span><div class="hud-bar"><div class="hud-fill fd" style="width:${S.danger}%"></div></div><span class="hud-val">${S.danger}%</span></div>
+    <div class="hud-right">${comp}<div class="hud-inv">${invH}</div><div class="hud-pp">Стиль: <span>${dom}</span></div></div>
+  </div>`;
+}
+
+function progressBar(idx){
+  const isEnd=idx>=STAGES.length;
+  const track=STAGES.map((s,i)=>{
+    let cls='prog-dot';
+    if(isEnd)cls+=' done';else if(i<idx)cls+=' done';else if(i===idx)cls+=' active';
+    const seg=i<STAGES.length-1?'<div class="prog-seg"></div>':'';
+    return `<span class="${cls}" title="${s}"></span>${seg}`;
+  }).join('');
+  return `<div class="progress"><div class="prog-track">${track}</div><p class="prog-lbl">${isEnd?'Кінець подорожі':STAGES[idx]}</p></div>`;
+}
+
+function shell(stageIdx,stage,title,body,choices,extra){
+  const dWarn=S.danger>=60?`<div class="danger-warn">⚠ Рівень небезпеки: ${S.danger}% — жандарми активні, будьте обережні.</div>`:'';
+  const ch=choices.map(c=>{
+    const tag=c.pen?`<span class="hint pp-pen">🖌 Пензель — ${c.pen}</span>`:c.quill?`<span class="hint pp-quill">✒ Перо — ${c.quill}</span>`:c.hint?`<span class="hint">${c.hint}</span>`:'';
+    return `<button class="btn-choice" onclick="${c.fn}">${c.text}${tag}</button>`;
+  }).join('');
+  return `<div class="scene-wrap">${hud()}${progressBar(stageIdx)}
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">${stage}</span></div>
+    <h2 class="scene-title">${title}</h2>
+    <div class="scene-body">${body}</div>
+    ${extra||''}<div class="choices">${ch}</div>${dWarn}</div>`;
+}
+
+// ── TITLE ──────────────────────────────────────────────────────────────
+function showTitle(){
+  S={auth:0,crea:0,secr:0,danger:0,companion:null,inv:[],litCities:[],savedItem:null,savedMsg:''};
+  r(`<div class="title-wrap">
+    <p class="title-eyebrow">Інтерактивна гра · Україна 1843–1847</p>
+    <h1 class="title-name">Шевченко</h1>
+    <p class="title-sub">Шлях Волі</p>
+    <hr class="title-rule">
+    <p class="title-blurb">Ви — Тарас Григорович Шевченко.<br>Мета: створити альбом «Живописна Україна»,<br>зібрати докази злочинів проти селян<br>та об'єднати патріотів у таємне Братство.</p>
+    <div class="mechanic-box">
+      <p class="mechanic-title">🖌 Пензель і Перо</p>
+      <div class="mechanic-row">
+        <span>🖌 Пензель</span> — вирішувати конфлікти малюванням, задобрюючи панів → +Творчість<br>
+        <span>✒ Перо</span> — вирішувати конфлікти словом, надихаючи народ → +Авторитет<br>
+        <span>👁 Тінь</span> — діяти непомітно, уникати уваги → +Скритність
+      </div>
+    </div>
+    <button class="btn-start" onclick="showCompanionSelect()">Розпочати подорож</button>
+  </div>`);
+}
+
+// ── COMPANION SELECT ───────────────────────────────────────────────────
+function showCompanionSelect(){
+  const grid=Object.entries(COMPANIONS).map(([k,c])=>
+    `<button class="btn-comp" onclick="setComp('${k}')">
+      <span class="comp-name">${c.name}</span>
+      <span class="comp-role">${c.role}</span>
+      <span class="comp-skill">${c.skill}</span>
+    </button>`).join('');
+  r(`<div class="select-wrap">
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Вибір побратима</span></div>
+    <h2 class="select-title">Оберіть побратима</h2>
+    <p class="select-sub">Один побратим супроводжуватиме вас. Кожен відкриває унікальні варіанти дій у сценах.</p>
+    <div class="comp-grid">${grid}</div>
+    <button class="btn-skip" onclick="setComp(null)">Мандрувати самостійно</button>
+  </div>`);
+}
+function setComp(k){S.companion=k;goTo('s1_start')}
+
+// ── ROUTER ─────────────────────────────────────────────────────────────
+function goTo(id){
+  const map={
+    s1_start,s1_ball,s1_defiance,
+    s2_arrival,s2_stealth,s2_st_ok,s2_st_bold,s2_st_hulak,s2_after,
+    s2_cipher:showCipher,
+    s2_join_act:()=>{mod(2,0,0,0);goTo('s2_stealth')},
+    s2_join_word:()=>{mod(0,2,0,0);goTo('s2_cipher')},
+    s2_join_care:()=>{mod(0,0,2,0);goTo('s2_stealth')},
+    s3_start,s3_serfs,s3_careful,s3_search,
+    s3_boot,s3_bible,s3_zakr,s3_bluff,s3_ink,
+    s3_lyrnyk_ok,s3_lyrnyk_partial,
+    s4_dnipro,s4_persuade,s4_boat,s4_hulak,s4_choice,
+    s4_art:()=>{mod(0,2,0,0);S.savedItem='art';showFinalScene()},
+    s4_letters:()=>{mod(2,0,0,0);S.savedItem='letters';showFinalScene()},
+    s4_both:()=>{mod(1,1,0,0);S.savedItem='both';showFinalScene()},
+  };
+  if(map[id])map[id]();else console.warn('Unknown:',id);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// STAGE 1 — КАЧАНІВКА
+// ══════════════════════════════════════════════════════════════════════
+function s1_start(){
+  visitCity('Качанівка');visitCity('Чернігів');
+  r(shell(0,'Етап I · Чернігівщина','Маєток Тарновського. Серпень 1843',
+`Ранній ранок. Маєток Тарновського в Качанівці. Тарас прокидається до світанку.
+
+Сьогодні — великий бал: з'їдуться козацькі нащадки й меценати. В руїнах старої церкви поруч — напівзруйнований герб гетьмана, який ніхто не відтворював сотні років. А пан вже шле слугу з доручення: малювати лише його дружину.
+
+Ваша мета: зібрати матеріали для альбому «Живописна Україна» і знайти союзників.`,
+  [
+    {text:'Піти до руїн — відновити герб гетьмана',pen:'Реставратор +Творчість, здобути Альбом і Офортну голку',fn:"showHeraldryGame()"},
+    {text:'Вийти на бал — знайти фінансиста українських видань',hint:'👁 Тінь +Скритність',fn:"goTo('s1_ball')"},
+    {text:'Відмовитись малювати лише дружину пана',quill:'Сміливість +Авторитет, ↑ Небезпека',fn:"goTo('s1_defiance')"},
+  ]));
+}
+
+// ── МІНІ-ГРА: РЕСТАВРАТОР ─────────────────────────────────────────────
+function showHeraldryGame(){
+  window.HG={restored:[]};
+  const parts=[
+    {icon:'🦁',name:'Лев',desc:'Символ мужності'},
+    {icon:'⚔️',name:'Меч',desc:'Козацька слава'},
+    {icon:'👑',name:'Корона',desc:'Герб гетьмана'},
+    {icon:'⭐',name:'Зірка',desc:'Восьмикутна зірка'},
+    {icon:'✝️',name:'Хрест',desc:'Православний хрест'},
+  ];
+  window.HG.render=function(){
+    const total=parts.length;
+    const done=window.HG.restored.length;
+    const pct=Math.round(done/total*100)+'%';
+    const frags=parts.map((p,i)=>{
+      const isOk=window.HG.restored.includes(i);
+      return `<button class="hg-frag ${isOk?'restored':''}" onclick="${isOk?'':(`window.HG.click(${i})`)}" ${isOk?'disabled':''}>
+        <span class="hg-icon">${p.icon}</span>
+        <span class="hg-name">${p.name}</span>
+        <span class="hg-sub">${isOk?'✓ Відновлено':p.desc}</span>
+      </button>`;
+    }).join('');
+    r(`<div class="scene-wrap">${hud()}${progressBar(0)}
+      <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Міні-гра · Реставратор</span></div>
+      <h2 class="scene-title">Відновіть герб гетьмана</h2>
+      <div class="scene-body">Перед вами — напівзруйнована стіна з гербом. Офортна голка допоможе відтворити найдрібніші деталі. Натискайте на кожен елемент герба, щоб відновити його.</div>
+      <div class="hg-box">
+        <p class="hg-head">Прогрес реставрації</p>
+        <div class="hg-prog-wrap"><div class="hg-prog-bar" style="width:${pct}"></div></div>
+        <p class="hg-counter">${done} / ${total} елементів відновлено</p>
+        <div class="hg-grid">${frags}</div>
+      </div>
+    </div>`);
+  };
+  window.HG.click=function(i){
+    if(!window.HG.restored.includes(i)){
+      window.HG.restored.push(i);
+      if(window.HG.restored.length===parts.length){
+        mod(0,2,0,0);addInv('Альбом');addInv('Офортна голка');
+        window.HG.render();
+        setTimeout(()=>goTo('s2_arrival'),900);
+        return;
+      }
+    }
+    window.HG.render();
+  };
+  window.HG.render();
+}
+
+function s1_ball(){
+  mod(0,0,2,0);
+  r(shell(0,'Етап I · Чернігівщина','Детектив на балу',
+`Зала виблискує свічками. Гості — нащадки козацьких старшин, офіцери, місцеві дворяни.
+
+Три підказки:
+— Товстий чоловік у кутку говорить тихо про «видання не для цензора».
+— Молодий учений передає комусь книгу в темно-синій обкладинці.
+— Тарновський надто шанобливо вклоняється сивому добродію.
+${S.companion==='zakrevska'?'\nЗакревська відволікає слуг. Тарас підслуховує: сивий — Григорій, фінансує друкарню у Відні.':'\nТарас підходить до сивого добродія і розкриває мецената — Григорія, що фінансує таємні видання.'}`,
+  [{text:'Союзника знайдено — до Київа',hint:'',fn:"goTo('s2_arrival')"}]));
+}
+
+function s1_defiance(){
+  mod(2,0,0,15);
+  r(shell(0,'Етап I · Чернігівщина','Виклик',
+`Пан підходить з дорученням: «Тарасе, намалюйте мою дружину. Не треба цих мужицьких хат».
+
+Тарас відповідає спокійно, але твердо:
+
+«Хати — це теж Україна. Я малюю те, що бачу, а не те, що зручно».
+
+Пан ображений. Але Тарас уже виходить із двору. Звістка про відмову дійшла до жандармерії.`,
+  [{text:'До Київа — слова сказані, шляху назад немає',fn:"goTo('s2_arrival')"}]));
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// STAGE 2 — КИЇВ
+// ══════════════════════════════════════════════════════════════════════
+function s2_arrival(){
+  visitCity('Київ');
+  r(shell(1,'Етап II · Київ','Кирило-Мефодіївське братство',
+`Київ. Хата на Подолі. Костомаров, Куліш, Гулак. Вони говорять про слов'янську федерацію, знищення кріпацтва, народну волю. Голоси стишені.
+
+Костомаров:
+«Тарасе, ваші вірші читають навіть ті, хто не знає літер. Влада боїться не вашого олівця, а того, що ви будите народ.»
+
+«То хай боїться! Народ не спить — він просто чекає, поки хтось скаже правду вголос.»
+
+«Ми створюємо Братство. Ви з нами?»`,
+  [
+    {text:'«Я вступлю, якщо ми будемо діяти, а не лише говорити»',quill:'+Авторитет',fn:"goTo('s2_join_act')"},
+    {text:'«Мій шлях — моє слово, але я підтримаю вас»',pen:'+Творчість → Шифр',fn:"goTo('s2_join_word')"},
+    {text:'«Хто ще в Братстві? Я не вірю кожному зустрічному»',hint:'👁 Тінь +Скритність',fn:"goTo('s2_join_care')"},
+  ]));
+}
+
+function s2_stealth(){
+  r(shell(1,'Етап II · Київ','Стелс-місія',
+`Рукопис «Кавказу» треба передати студентам біля університету. Жандармські патрулі ходять вулицями. Тарас згортає аркуші й ховає під пальто.`,
+  [
+    {text:'Обійти патруль задвірками',hint:'👁 Тінь +Скритність',fn:"goTo('s2_st_ok')"},
+    {text:'Іти прямо — з упевненим виглядом',quill:'+Авторитет, ↑ Небезпека',fn:"goTo('s2_st_bold')"},
+    ...(S.companion==='hulak'?[{text:'Гулак затримує патруль юридичними аргументами',hint:'Вміння Гулака ↓ Небезпека',fn:"goTo('s2_st_hulak')"}]:[]),
+  ]));
+}
+
+function s2_st_ok(){mod(0,0,1,5);r(shell(1,'Етап II · Київ','Непомітна передача',`Тарас ковзає провулками. Студент чекає під деревом — бере аркуші мовчки.\n\nМісія виконана. Рукопис на волі.`,[{text:'До зборів Братства',fn:"goTo('s2_after')"}]))}
+function s2_st_bold(){mod(1,0,0,20);r(shell(1,'Етап II · Київ','Відкрита дія',`Тарас іде прямо. Патруль дивиться — але він не сповільнює ходу. Студент отримує рукопис.\n\nАле один офіцер провів поглядом задовго.`,[{text:'До братства — і геть з Київа',fn:"goTo('s2_after')"}]))}
+function s2_st_hulak(){mod(0,0,1,-15);r(shell(1,'Етап II · Київ','Юридичний захист',`Гулак затримав патруль потоком термінів про права громадян. Тарас непомітно передав рукопис.`,[{text:'Далі',fn:"goTo('s2_after')"}]))}
+
+function s2_after(){
+  addInv('Чорнильниця');
+  r(shell(1,'Етап II · Київ','Збори Братства',
+`Темна кімната. Свічки. Обличчя однодумців.
+
+Куліш простягає невеличку металеву чорнильницю: «Бери. Непроливайка — можеш писати навіть верхи на коні. Знадобиться».
+
+Братство діє. Вірші вже ходять по місту.
+
+Але Куліш говорить тихо: «За нами стежать. Треба рухатись на Полтавщину».`,
+  [{text:'На Полтавщину',fn:"goTo('s3_start')"}]));
+}
+
+// ── CIPHER ────────────────────────────────────────────────────────────
+function showCipher(){
+  const hasNeedle=hasInv('Офортна голка');
+  r(`<div class="scene-wrap">${hud()}${progressBar(1)}
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Етап II · Київ</span></div>
+    <h2 class="scene-title">Оптичний шифр Кобзаря</h2>
+    <div class="scene-body">Місце зборів Братства зашифровано у малюнку київського пейзажу. Тарас тримає ескіз і прозору сітку. Де накласти сітку — підкаже вірш.
+
+Якщо поставити сітку правильно й піднести свічку — тіні складуться у назву місця.</div>
+    <div class="cipher-box">
+      <p class="cipher-head">Підказка — вірш Шевченка</p>
+      <div class="cipher-verse">"Дніпро, і хвилі, і луга,
+І темний ліс — усе мовчить,
+Лиш де гора стоїть крута —
+Там братство вільне говорить."</div>
+      <p class="cipher-clue">Де <strong>гора стоїть крута</strong> в Києві? Стара козацька гора. Введіть її назву (починається на «Щ»).</p>
+      ${hasNeedle?`<p class="cipher-item-hint">🖊 Офортна голка допомагає: перша літера — «Щ», остання — «я»</p>`:''}
+      <input class="cipher-inp" id="cinp" placeholder="Введіть назву..." maxlength="20" oninput="this.value=this.value.toUpperCase()">
+      <div class="cipher-fb" id="cfb"></div>
+      <div class="cipher-btns">
+        <button class="btn-check" onclick="checkCipher()">Перевірити</button>
+        <button class="btn-skip-c" onclick="cipherSkip()">Пропустити (−1 Скритність)</button>
+      </div>
+    </div>
+    ${S.danger>=60?`<div class="danger-warn">⚠ Небезпека ${S.danger}% — поспішайте.</div>`:''}
+  </div>`);
+}
+
+function checkCipher(){
+  const val=(document.getElementById('cinp').value||'').trim().toUpperCase();
+  const fb=document.getElementById('cfb');
+  if(['ЩЕКАВИЦЯ','ЩЕКАВИЦА','ЩЕКАВЕЦЬ'].some(a=>val.includes(a))){
+    fb.textContent='Правильно! Щекавиця — місце зборів знайдено.';
+    fb.className='cipher-fb ok';
+    mod(0,1,1,0);
+    setTimeout(()=>goTo('s2_after'),1400);
+  } else {
+    fb.textContent='Не те. Підказка: давня гора в Києві, де збирались козаки.';
+    fb.className='cipher-fb err';
+    mod(0,0,0,5);
+  }
+}
+function cipherSkip(){mod(0,0,-1,10);goTo('s2_after')}
+
+// ══════════════════════════════════════════════════════════════════════
+// STAGE 3 — ПОЛТАВЩИНА
+// ══════════════════════════════════════════════════════════════════════
+function s3_start(){
+  visitCity('Полтавщина');
+  r(shell(2,'Етап III · Полтавщина','Золоте поле',
+`Полтавщина. Серпень. Безкрайні степи, золота пшениця.
+
+Тарас їде селами. На вечорницях старий лірник грає думу, якої немає в жодній книзі. Поруч — кріпаки з виснаженими обличчями. Попереду — поштова станція.`,
+  [
+    {text:'Записати народну пісню від лірника',pen:'Ритм-гра +Творчість, Святе Письмо',fn:"showRhythmGame()"},
+    {text:'Допомогти кріпакам — написати скаргу до суду',quill:'+Авторитет, ↑ Небезпека',fn:"goTo('s3_serfs')"},
+    {text:'Рухатись обережно — уникати зайвої уваги',hint:'👁 Тінь +Скритність',fn:"goTo('s3_careful')"},
+  ]));
+}
+
+// ── РИТМ-ГРА ──────────────────────────────────────────────────────────
+function showRhythmGame(){
+  window.RG={score:0,note:0,total:5,active:false,started:false,timers:[]};
+  function renderRG(){
+    r(`<div class="scene-wrap">${hud()}${progressBar(2)}
+      <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Ритм-гра · Полтавщина</span></div>
+      <h2 class="scene-title">Запис Народної Думи</h2>
+      <div class="scene-body">Стара Горпина починає співати. Вловіть ритм — натискайте кнопку кожного разу, коли нота засвітиться золотом!</div>
+      <div class="rg-box">
+        <p class="rg-head">Ритм думи</p>
+        <p class="rg-desc">Чекайте поки нота засвітиться, тоді натисніть кнопку ♪</p>
+        <div class="rg-stage"><span class="rg-note" id="rg-note">♪</span></div>
+        <div class="rg-timer-wrap"><div class="rg-bar" id="rg-bar"></div></div>
+        <p class="rg-status" id="rg-status">Натисніть кнопку щоб почати</p>
+        <p class="rg-score" id="rg-score">Влучань: 0 / 5</p>
+        <button class="rg-hit-btn" id="rg-btn" onclick="window.RG.tap()">♪ Почати / Грати</button>
+      </div>
+    </div>`);
+  }
+  window.RG.tap=function(){
+    if(!window.RG.started){window.RG.started=true;setTimeout(()=>window.RG.startNote(),600);
+      const st=document.getElementById('rg-status');if(st)st.textContent='Слухайте ритм...';return;}
+    if(!window.RG.active)return;
+    window.RG.active=false;
+    window.RG.score++;
+    window.RG.timers.forEach(t=>clearTimeout(t));window.RG.timers=[];
+    const note=document.getElementById('rg-note');
+    const bar=document.getElementById('rg-bar');
+    const sc=document.getElementById('rg-score');
+    if(note){note.className='rg-note rg-hit';}
+    if(bar){bar.style.transition='none';bar.style.width='0%';}
+    if(sc)sc.textContent=`Влучань: ${window.RG.score} / ${window.RG.total}`;
+    const t=setTimeout(()=>{if(note)note.className='rg-note';window.RG.nextNote();},350);
+    window.RG.timers.push(t);
+  };
+  window.RG.startNote=function(){
+    const note=document.getElementById('rg-note');
+    const bar=document.getElementById('rg-bar');
+    const status=document.getElementById('rg-status');
+    if(!note)return;
+    window.RG.active=true;
+    note.className='rg-note rg-active';
+    if(status)status.textContent=`Нота ${window.RG.note+1} / ${window.RG.total} — НАТИСКАЙТЕ!`;
+    if(bar){bar.style.transition='none';bar.style.width='100%';
+      const t1=setTimeout(()=>{if(bar){bar.style.transition='width 1.3s linear';bar.style.width='0%';}},40);
+      window.RG.timers.push(t1);}
+    const t2=setTimeout(()=>{
+      if(!window.RG.active)return;
+      window.RG.active=false;
+      if(note){note.className='rg-note rg-miss';}
+      const t3=setTimeout(()=>{if(note)note.className='rg-note';window.RG.nextNote();},400);
+      window.RG.timers.push(t3);
+    },1300);
+    window.RG.timers.push(t2);
+  };
+  window.RG.nextNote=function(){
+    window.RG.note++;
+    if(window.RG.note>=window.RG.total){const t=setTimeout(()=>window.RG.end(),700);window.RG.timers.push(t);return;}
+    const t=setTimeout(()=>window.RG.startNote(),750);window.RG.timers.push(t);
+  };
+  window.RG.end=function(){
+    const s=window.RG.score;
+    const status=document.getElementById('rg-status');
+    if(status)status.textContent=s>=3?'✓ Пісню записано! Горпина усміхається.':'Деякі ноти загублено...';
+    setTimeout(()=>{
+      if(s>=3){mod(0,2,0,0);addInv('Святе Письмо');goTo('s3_lyrnyk_ok');}
+      else{mod(0,1,0,0);goTo('s3_lyrnyk_partial');}
+    },1100);
+  };
+  renderRG();
+}
+
+function s3_lyrnyk_ok(){
+  r(shell(2,'Етап III · Полтавщина','Жива пісня',
+`Горпина сміється: «Маєте слух, добродію!»
+
+Тарас записав усі п'ять строф думи між сторінок Біблії. «Святе Письмо» стало надійною схованкою.
+${S.companion==='kulish'?'\nКуліш тихо друкує ще кілька копій. «Тепер пісня у безпеці».':''}
+«Якщо не запишемо — зникне», — каже він. «Нехай живе», — відповідає вона.`,
+  [{text:'До поштової станції',fn:"goTo('s3_search')"}]));
+}
+
+function s3_lyrnyk_partial(){
+  r(shell(2,'Етап III · Полтавщина','Частковий запис',
+`Деякі ноти загублено, але більшість думи збережена. Горпина доспівує рядки, що не вийшли, і Тарас нашвидку дописує.
+
+Хоча б щось — краще, ніж нічого.`,
+  [{text:'До поштової станції',fn:"goTo('s3_search')"}]));
+}
+
+function s3_serfs(){
+  mod(2,0,0,15);
+  const hasInk=hasInv('Чорнильниця');
+  r(shell(2,'Етап III · Полтавщина','Справа кріпаків',
+`Тарас слухає кріпаків. Їхній пан б'є за дрібниці, забирає зерно.
+${hasInk?'\nЧорнильниця-непроливайка дозволяє писати навіть верхи. Тарас складає скаргу прямо в дорозі — чітку, з іменами й датами.':'\nТарас зупиняється і пише скаргу — різку, точну, з іменами.'}
+Один з кріпаків плаче: «Дякуємо, добродію. Може, хтось почує».
+
+Але сусідній пан вже відправив гінця до міста.`,
+  [{text:'Тікати до станції',fn:"goTo('s3_search')"}]));
+}
+
+function s3_careful(){
+  mod(0,0,2,0);
+  r(shell(2,'Етап III · Полтавщина','Невидимий шлях',
+`Тарас пересувається лісами, уникає великих доріг. Малює таємно — на маленьких аркушах, що поміщаються в долоні.
+
+Жандарми шукають «художника зі Столиці» — але не знаходять.`,
+  [{text:'До поштової станції',fn:"goTo('s3_search')"}]));
+}
+
+function s3_search(){
+  r(shell(2,'Етап III · Полтавщина','Обшук на станції',
+`На поштовій станції жандарм зупиняє Тараса:
+
+«Документи. І сумку відкрийте».
+
+В сумці — блокнот із найрадикальнішими віршами. Кілька секунд, щоб вирішити.`,
+  [
+    {text:'Заховати блокнот за халяву чобота',hint:'👁 Тінь +Скритність',fn:"goTo('s3_boot')"},
+    ...(hasInv('Святе Письмо')?[{text:'Сховати між сторінок «Святого Письма»',hint:'Предмет з інвентаря +Скритність',fn:"goTo('s3_bible')"}]:[]),
+    ...(hasInv('Чорнильниця')?[{text:'«Необережно» розлити чорнило на сторінки',hint:'Чорнильниця — текст стає нечитабельним',fn:"goTo('s3_ink')"}]:[]),
+    ...(S.companion==='zakrevska'?[{text:'Закревська відволікає жандарма',hint:'Вміння Закревської',fn:"goTo('s3_zakr')"}]:[]),
+    {text:'Стояти спокійно — вони нічого не знайдуть',quill:'+Авторитет, ↑ Небезпека',fn:"goTo('s3_bluff')"},
+  ]));
+}
+
+function s3_boot(){mod(0,0,2,0);r(shell(2,'Етап III · Полтавщина','Захалявна книжечка',`Одним рухом — блокнот за халяву.\n\nЖандарм перегортає сумку, знаходить лише фарби й чисті аркуші. Пожимає плечима й відходить.\n\nТарас видихає.`,[{text:'До Дніпра',fn:"goTo('s4_dnipro')"}]))}
+function s3_bible(){mod(0,1,1,0);r(shell(2,'Етап III · Полтавщина','Між псалмами',`Вірші між сторінками «Святого Письма».\n\nЖандарм гортає книгу — але хіба хтось шукатиме крамолу між псалмами?\n\n«Проходьте», — каже він.`,[{text:'До Дніпра',fn:"goTo('s4_dnipro')"}]))}
+function s3_ink(){mod(0,0,2,-5);r(shell(2,'Етап III · Полтавщина','Чорне море',`Тарас «необережно» перекидає чорнильницю прямо на блокнот. Чорнило заливає рядки.\n\nЖандарм дивиться на чорні сторінки: «Що це?» — «Зіпсована проба. Шкода паперу».\n\nВсе злиплось. Нічого не прочитати.`,[{text:'До Дніпра',fn:"goTo('s4_dnipro')"}]))}
+function s3_zakr(){mod(0,0,1,-10);r(shell(2,'Етап III · Полтавщина','Відволікання',`Закревська підходить до жандарма з питанням про розклад диліжансів. Він обертається до неї.\n\nТарас ховає блокнот. Перевірка закінчується нічим.`,[{text:'До Дніпра',fn:"goTo('s4_dnipro')"}]))}
+function s3_bluff(){mod(1,0,0,20);r(shell(2,'Етап III · Полтавщина','Холоднокровність',`«Будь ласка», — Тарас простягає сумку.\n\nЖандарм перегортає вірші, але не впізнає що це. «Ескізи?» — «Для академії».\n\nПронесло. Але хтось із черги придивився занадто уважно.`,[{text:'До Дніпра',fn:"goTo('s4_dnipro')"}]))}
+
+// ══════════════════════════════════════════════════════════════════════
+// STAGE 4 — ДНІПРО
+// ══════════════════════════════════════════════════════════════════════
+function s4_dnipro(){
+  visitCity('Дніпро');visitCity('Канів');
+  r(shell(3,'Етап IV · Дніпро','Берег',
+`Дніпро. Широченний, сріблястий. На поромі — двоє жандармів, перевіряють кожного.
+
+У Тараса: ящик із фарбами і альбом та сумка з листами побратимів — справжні докази Братства. Треба переправитись.`,
+  [
+    {text:'Переконати поромника — він теж з народу',quill:'+Авторитет',fn:"goTo('s4_persuade')"},
+    {text:'Самостійно керувати маленьким човном у темряві',pen:'+Творчість, ↑ Небезпека',fn:"goTo('s4_boat')"},
+    ...(S.companion==='hulak'?[{text:'Гулак затримує жандармів юридичним спором',hint:'Вміння Гулака',fn:"goTo('s4_hulak')"}]:[]),
+    ...(hasInv('Офортна голка')?[{text:'Офортною голкою відкрити замок на льоху порому',hint:'Предмет +Скритність',fn:"goTo('s4_needle')"}]:[]),
+  ]));
+}
+
+function s4_persuade(){mod(1,0,0,0);r(shell(3,'Етап IV · Дніпро','Поромник',`Тарас відводить поромника вбік. Говорить тихо про волю, про те, що несе в сумці.\n\nПоромник мовчить. Потім: «Я сам кріпак до минулого року. Їдьте».\n\nПором відчалює. Жандарми кричать з берега.`,[{text:'Що рятувати? Вирішуй зараз.',fn:"goTo('s4_choice')"}]))}
+function s4_boat(){mod(0,1,0,15);r(shell(3,'Етап IV · Дніпро','Темна вода',`Тарас штовхає маленький човен у темряву. Весла б'ють по хвилях.\n\nЖандарми не наважуються лізти у воду. Він перепливає.`,[{text:'Що рятувати?',fn:"goTo('s4_choice')"}]))}
+function s4_hulak(){mod(0,0,1,-15);r(shell(3,'Етап IV · Дніпро','Юридичний відступ',`Гулак: «На якій підставі? Параграф 47 статуту...» Вони сперечаються.\n\nТарас спокійно заходить на пором.`,[{text:'Що рятувати?',fn:"goTo('s4_choice')"}]))}
+function s4_needle(){
+  if(!window.s4_needle_done){window.s4_needle_done=true;mod(0,0,2,0);}
+  r(shell(3,'Етап IV · Дніпро','Таємний льох',`Офортна голка тихенько відкриває замок. У льосі порому є місце для сумки і ящика.\n\nТарас ховає обидва — і непомітно виходить назад на палубу.\n\nЖандарми перевіряють пасажирів, але нічого не знаходять.`,[{text:'Що рятувати?',fn:"goTo('s4_choice')"}]));
+}
+
+function s4_choice(){
+  const canBoth=S.danger<40||hasInv('Офортна голка');
+  r(`<div class="scene-wrap">${hud()}${progressBar(3)}
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Етап IV · Дніпро</span></div>
+    <h2 class="scene-title" style="font-size:clamp(1.3rem,6vw,1.8rem);letter-spacing:.01em">Жандарми вже близько.</h2>
+    <div class="scene-body" style="font-size:clamp(1rem,3.5vw,1.15rem);line-height:2.1">У тебе є лише мить.
+
+Ящик із фарбами — альбом «Живописна Україна», місяці роботи, обличчя народу.
+Листи побратимів — імена, явки, плани Братства. У руках жандармів — це арешти.
+
+<strong style="color:var(--gold-lt)">Що врятувати?</strong></div>
+    <div class="choices">
+      <button class="btn-choice" onclick="goTo('s4_art')" style="font-size:clamp(1rem,3.2vw,1.1rem);min-height:62px">
+        🎨 Ящик із фарбами<span class="hint pp-pen">Пензель — Кінцівка Художника</span>
+      </button>
+      <button class="btn-choice" onclick="goTo('s4_letters')" style="font-size:clamp(1rem,3.2vw,1.1rem);min-height:62px">
+        📜 Листи побратимів<span class="hint pp-quill">Перо — Кінцівка Братства</span>
+      </button>
+      ${canBoth?`<button class="btn-choice" onclick="goTo('s4_both')" style="font-size:clamp(.9rem,3vw,1rem);min-height:52px">
+        ⚡ Спробувати врятувати обоє — ризик!<span class="hint">Небезпека < 40% або є Офортна голка</span>
+      </button>`:''}
+    </div>
+    <div class="danger-warn" style="margin-top:16px;font-size:.82rem">⚠ Небезпека: ${S.danger}% — кожна секунда на рахунку.</div>
+  </div>`);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ФІНАЛЬНА СЦЕНА — ЧЕРНЕЧА ГОРА
+// ══════════════════════════════════════════════════════════════════════
+function showFinalScene(){
+  visitCity('Канів');
+  const spirits=[
+    {text:'Привид кобзаря з дороги: «Доля — в руках тих, хто не мовчить».',active:S.auth>2},
+    {text:'Обличчя матері з Полтавщини: «Якщо не запишемо — зникне».',active:S.crea>2},
+    {text:'Тінь студента в темному провулку: «Ми отримали рукопис».',active:S.secr>2},
+    {text:'Голос поромника: «Я сам кріпак до минулого року».',active:S.auth>3},
+    {text:'Стара Горпина: «Пісня тепер живе — завдяки вам».',active:S.crea>3},
+  ];
+  const spiritsHtml=`<div class="conscience">${spirits.map(sp=>`<div class="spirit ${sp.active?'lit':''}">${sp.text}</div>`).join('')}</div>`;
+  const citiesHtml=`<div class="cities">${ALL_CITIES.map(c=>{const isLit=S.litCities.includes(c);return`<button class="city-btn ${isLit?'lit':''}" onclick="toggleCity('${c}',this)">${c}${isLit?' 🕯':''}</button>`;}).join('')}</div>`;
+
+  // Gallery from localStorage
+  let gallery='';
+  try{
+    const prev=JSON.parse(localStorage.getItem('shevchenko_gallery')||'[]');
+    if(prev.length>0){
+      gallery=`<div class="gallery-box"><p class="gallery-head">📜 Послання попередніх мандрівників</p>${prev.slice(-3).map(m=>`<div class="gallery-item">«${m}»</div>`).join('')}</div>`;
+    }
+  }catch(e){}
+
+  r(`<div class="scene-wrap">${hud()}${progressBar(4)}
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Фінальна сцена</span></div>
+    <h2 class="scene-title">Заповіт на Чернечій горі</h2>
+    <div class="scene-body">Світанок над Дніпром. Тарас стоїть на кручі Чернечої гори під Каневом.
+
+Звідси видно все — ріку, луки, далекий берег. Вода сріблиться. Тихо.
+
+Приходять голоси — привиди власних рішень.</div>
+    ${spiritsHtml}
+    <div class="map-box">
+      <p class="map-head">Спадщина — Запалені свічки</p>
+      <p class="map-sub">Ці міста ви відвідали. Запаліть свічку там, де залишили слід — ваші твори, слова, вчинки.</p>
+      ${citiesHtml}
+      <p class="map-count" id="mcount">Запалено: ${S.litCities.length} / ${ALL_CITIES.length}</p>
+    </div>
+    ${gallery}
+    <p class="msg-head">Послання нащадкам</p>
+    <p class="msg-sub">Тарас кладе останній аркуш на землю. Що ви хочете сказати тим, хто прийде після?</p>
+    <textarea class="msg-inp" id="minp" placeholder="Напишіть ваше послання...">${S.savedMsg}</textarea>
+    <div class="choices"><button class="btn-choice" onclick="finishGame()">Завершити подорож →</button></div>
+  </div>`);
+}
+
+function toggleCity(name,btn){
+  if(!S.litCities.includes(name)){S.litCities.push(name);btn.classList.add('lit');btn.textContent=name+' 🕯';}
+  else{S.litCities=S.litCities.filter(c=>c!==name);btn.classList.remove('lit');btn.textContent=name;}
+  document.getElementById('mcount').textContent=`Запалено: ${S.litCities.length} / ${ALL_CITIES.length}`;
+}
+
+function finishGame(){
+  S.savedMsg=(document.getElementById('minp')||{}).value||'';
+  try{
+    const prev=JSON.parse(localStorage.getItem('shevchenko_gallery')||'[]');
+    if(S.savedMsg.trim()){prev.push(S.savedMsg.trim());localStorage.setItem('shevchenko_gallery',JSON.stringify(prev.slice(-10)));}
+  }catch(e){}
+  const id=S.savedItem==='art'?'end_artist':S.savedItem==='letters'?'end_brotherhood':'end_wanderer';
+  showEnding(id);
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ENDINGS
+// ══════════════════════════════════════════════════════════════════════
+function showEnding(id){
+  const ENDS={
+    end_brotherhood:{
+      badge:'Кінцівка I · Голос Братства',title:'Заповіт',
+      poem:`"Як умру, то поховайте\nМене на могилі,\nСеред степу широкого\nНа Вкраїні милій..."`,
+      body:`Тарас береться до пера.
+
+Слова течуть — про любов до землі, про волю, якої ще нема, але яка — буде. Він пише для тих, хто зараз у кайданах.
+
+Листи Братства врятовані. Мережа жива. Де-не-де у темних кімнатах люди читають його вірші й передають далі.
+
+Ці рядки переживуть імперії. Їх будуть шептати в застінках і кричати на майданах.
+
+Але зараз він просто пише. І Дніпро тихо слухає.`,
+      epilogue:'Братство стало основою для майбутніх поколінь борців. Листи, що ви врятували, ходили по руках ще двадцять років після арешту Тараса у 1847 році.',
+    },
+    end_artist:{
+      badge:'Кінцівка II · Хранитель Пам\'яті',title:'Пензель і Вічність',poem:null,
+      body:`Тарас розгортає альбом.
+
+Десятки облич дивляться на нього. Стара мати з Полтавщини. Герб гетьмана на стіні руїни. Кобзар на узбіччі. Дніпро на світанку.
+
+Ці люди можуть не знати грамоти. Їхні імена не збережуться в книгах. Але їхні обличчя — збережуться.
+
+«Живописна Україна» стане книгою, яку побачать тисячі.`,
+      epilogue:'Альбом «Живописна Україна» видано в Петербурзі. Сорок офортів. Перше видання розкуплено за тиждень. Обличчя народу збережені для вічності.',
+    },
+    end_wanderer:{
+      badge:'Кінцівка III · Дорога Без Кінця',title:'Вічний Мандрівник',poem:null,
+      body:`Тарас довго стоїть над Дніпром.
+
+Питань більше, ніж відповідей. Але Дніпро тече — незалежно від указів, від жандармів, від страху.
+
+Може, шлях волі — це не пункт призначення. Це сама дорога. І той, хто іде — вже вільний.
+
+Тарас бере торбу й іде далі.`,
+      epilogue:'Скритність дозволила уникнути арешту на три роки довше. Ви продовжили подорож Україною, записуючи пісні й малюючи.',
+    },
+  };
+  const e=ENDS[id];
+  const poem=e.poem?`<div class="end-poem">${e.poem}</div>`:'';
+  const msg=S.savedMsg?`<div class="msg-saved">Ваше послання нащадкам збережено:<br>«${S.savedMsg}»</div>`:'';
+  r(`<div class="ending-wrap">${progressBar(4)}
+    <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Кінець подорожі</span></div>
+    <p class="end-badge">${e.badge}</p>
+    <h2 class="end-title">${e.title}</h2>
+    <hr class="end-rule">${poem}
+    <div class="end-body">${e.body}</div>
+    <div class="end-stats">
+      <div class="es"><span class="es-lbl">🖌 Пензель</span><span class="es-val">${S.crea}/10</span></div>
+      <div class="es"><span class="es-lbl">✒ Перо</span><span class="es-val">${S.auth}/10</span></div>
+      <div class="es"><span class="es-lbl">👁 Тінь</span><span class="es-val">${S.secr}/10</span></div>
+      <div class="es"><span class="es-lbl">Небезпека</span><span class="es-val">${S.danger}%</span></div>
+      <div class="es"><span class="es-lbl">Свічок</span><span class="es-val">${S.litCities.length}/${ALL_CITIES.length}</span></div>
+    </div>
+    <div class="end-epilogue">${e.epilogue}</div>
+    ${msg}
+    <button class="btn-restart" onclick="showTitle()">Почати знову</button>
+  </div>`);
+}
+
+showTitle();
+</script>
+</body>
+</html>
