@@ -270,10 +270,10 @@ function hud(){
   const invH=S.inv.map(i=>`<span class="inv-pip">${i}</span>`).join('');
   const dom=S.auth>=S.crea&&S.auth>=S.secr?'✒ Перо':S.crea>=S.secr?'🖌 Пензель':'👁 Тінь';
   return `<div class="hud">
-    <div class="hud-stat"><span class="hud-lbl">Авторитет</span><div class="hud-bar"><div class="hud-fill fa" style="width:${p(S.auth)}"></div></div><span class="hud-val">${S.auth}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">Творчість</span><div class="hud-bar"><div class="hud-fill fc" style="width:${p(S.crea)}"></div></div><span class="hud-val">${S.crea}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">Скритність</span><div class="hud-bar"><div class="hud-fill fs" style="width:${p(S.secr)}"></div></div><span class="hud-val">${S.secr}/10</span></div>
-    <div class="hud-stat"><span class="hud-lbl">Небезпека</span><div class="hud-bar"><div class="hud-fill fd" style="width:${S.danger}%"></div></div><span class="hud-val">${S.danger}%</span></div>
+    <div class="hud-stat"><span class="hud-lbl">✒ Авт.</span><div class="hud-bar"><div class="hud-fill fa" style="width:${p(S.auth)}"></div></div><span class="hud-val">${S.auth}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">🖌 Тв.</span><div class="hud-bar"><div class="hud-fill fc" style="width:${p(S.crea)}"></div></div><span class="hud-val">${S.crea}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">👁 Скр.</span><div class="hud-bar"><div class="hud-fill fs" style="width:${p(S.secr)}"></div></div><span class="hud-val">${S.secr}/10</span></div>
+    <div class="hud-stat"><span class="hud-lbl">⚠ Небезп.</span><div class="hud-bar"><div class="hud-fill fd" style="width:${S.danger}%"></div></div><span class="hud-val">${S.danger}%</span></div>
     <div class="hud-right">${comp}<div class="hud-inv">${invH}</div><div class="hud-pp">Стиль: <span>${dom}</span></div></div>
   </div>`;
 }
