@@ -28,10 +28,8 @@ body{margin:0;font-family:'Inter',sans-serif;background:#FAF8F3;color:#1A1818;di
 h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(1.6rem,7vw,2rem);color:#1A1818;font-weight:400;margin-bottom:10px}
 
 /* stats */
-.stats{display:flex;margin-bottom:20px;border-top:3px solid #1A1818}
-.stats>*{flex:1;padding:8px 0 6px;border-right:1px solid var(--border);font-size:.7rem;text-align:center}
-.stats>*:last-child{border-right:none}
-.stats span{display:block;font-family:'Bodoni Moda',serif;font-size:1.1rem;color:#1A1818;font-weight:400;transition:color .3s}
+.stats{font-size:.75rem;margin-bottom:20px;padding:9px 0;border-top:3px solid #1A1818;border-bottom:1px solid var(--border);color:#555;text-align:center;line-height:1.6}
+.stats span{font-family:'Bodoni Moda',serif;font-size:1rem;color:#1A1818;font-weight:400;transition:color .3s}
 .stats span.bump{color:var(--red)}
 
 @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -40,8 +38,8 @@ h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(1.6rem,7vw,
 
 /* HUD */
 .hud{display:flex;gap:0;margin-bottom:18px;border:1px solid var(--border);animation:appear .3s ease both}
-.hud-stat{display:flex;flex-direction:column;align-items:center;flex:1;min-width:50px;padding:8px 4px;border-right:1px solid var(--border)}
-.hud-stat:last-of-type{border-right:none}
+.hud-stat{display:flex;flex-direction:column;align-items:center;flex:1;min-width:40px;padding:8px 4px;border-right:1px solid var(--border)}
+.hud-right{border-left:none!important}
 .hud-lbl{font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
 .hud-bar{width:80%;height:2px;background:var(--border);overflow:hidden;margin-bottom:3px}
 .hud-fill{height:100%;transition:width .4s}
@@ -98,12 +96,12 @@ h1{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(1.6rem,7vw,
 .game-lbl{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .stage-tag{font-size:.62rem;color:#1A1818;letter-spacing:.07em;font-weight:500}
 .scene-title{font-family:'Bodoni Moda',serif;font-style:italic;font-size:clamp(1.3rem,5.5vw,1.65rem);color:#1A1818;font-weight:400;margin-bottom:14px;line-height:1.2}
-.scene-body{font-size:clamp(.88rem,2.8vw,.95rem);line-height:1.95;white-space:pre-line;color:#333;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.choices{display:flex;flex-direction:column;gap:0}
-.btn-choice{background:#FAF8F3;border:none;border-top:1px solid var(--border);color:#1A1818;width:100%;min-height:52px;padding:13px 0;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(.85rem,2.8vw,.9rem);line-height:1.5;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s cubic-bezier(.16,1,.3,1);display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative}
+.scene-body{font-size:clamp(.88rem,2.8vw,.95rem);line-height:1.95;white-space:pre-line;color:#333;margin-bottom:0;padding-bottom:0}
+.choices{display:flex;flex-direction:column;gap:0;margin-top:20px}
+.btn-choice{background:#FAF8F3;border:none;border-top:1px solid var(--border);color:#1A1818;width:100%;min-height:52px;padding:12px 28px 12px 0;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;font-size:clamp(.85rem,2.8vw,.9rem);line-height:1.5;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .2s;display:block;position:relative}
 .btn-choice:last-child{border-bottom:1px solid var(--border)}
 .btn-choice:hover,.btn-choice:active{background:var(--hover);padding-left:10px}
-.btn-choice::after{content:'→';font-size:1rem;color:var(--muted);opacity:0;transform:translateX(-6px);transition:all .2s;flex-shrink:0}
+.btn-choice::after{content:'→';position:absolute;right:0;top:14px;font-size:.9rem;color:var(--muted);opacity:0;transform:translateX(-4px);transition:all .2s}
 .btn-choice:hover::after{opacity:1;transform:translateX(0)}
 .hint{display:block;font-size:.6rem;color:var(--muted);margin-top:3px;letter-spacing:.04em}
 .pp-pen{color:#92400e}.pp-quill{color:#2d6a4f}
