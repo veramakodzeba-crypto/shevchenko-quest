@@ -93,7 +93,7 @@ h1{font-size:20px;margin-bottom:10px;color:#a29bfe}
 .choices{display:flex;flex-direction:column;gap:10px}
 .btn-choice{background:#6c5ce7;border:none;color:#fff;width:100%;min-height:52px;padding:12px 18px;text-align:left;cursor:pointer;font-family:'EB Garamond',serif;font-size:clamp(.92rem,3vw,.98rem);line-height:1.55;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:.2s;border-radius:12px;margin-top:10px;position:relative}
 .btn-choice:hover,.btn-choice:active{background:#a29bfe;transform:scale(1.03)}
-.hint{display:block;font-size:.65rem;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.hint{display:block;font-size:.65rem;color:rgba(255,255,255,.65);margin-top:3px;letter-spacing:.04em}
 .pp-pen{color:#ffeaa7}.pp-quill{color:#b8f5b0}
 .danger-warn{margin-top:12px;padding:10px 14px;border:1px solid var(--red);border-radius:2px;font-size:.75rem;color:#c47070;line-height:1.6}
 
@@ -821,7 +821,7 @@ function finishGame(){
     const prev=JSON.parse(localStorage.getItem('shevchenko_gallery')||'[]');
     if(S.savedMsg.trim()){prev.push(S.savedMsg.trim());localStorage.setItem('shevchenko_gallery',JSON.stringify(prev.slice(-10)));}
   }catch(e){}
-  const id=S.savedItem==='art'?'end_artist':S.savedItem==='letters'?'end_brotherhood':'end_wanderer';
+  const id=S.savedItem==='both'?'end_triumph':S.savedItem==='art'?'end_artist':S.savedItem==='letters'?'end_brotherhood':'end_wanderer';
   showEnding(id);
 }
 
@@ -830,6 +830,21 @@ function finishGame(){
 // ══════════════════════════════════════════════════════════════════════
 function showEnding(id){
   const ENDS={
+    end_triumph:{
+      badge:'⭐ Найкраща кінцівка · Легенда',title:'І Слово, і Пензель',
+      poem:`"І мертвим, і живим, і ненарожденним\nземлякам моїм — і не землякам —\nпосланіє."`,
+      body:`Тарас стоїть на Чернечій горі. В руках — і ящик з фарбами, і сумка з листами.
+
+Обидва. Він зберіг обидва.
+
+Альбом «Живописна Україна» — пам'ять народу в малюнках. Листи Братства — його голос у словах.
+
+Мистецтво і боротьба. Пензель і перо. Він не обирав між ними — тому що Україні потрібне і те, і те.
+
+Дніпро сяє внизу. Тарас дивиться на нього довго. Потім відкриває блокнот і пише перші рядки «Заповіту».`,
+      epilogue:'Це — найповніший шлях Шевченка. У березні 1847 року його заарештували й заслали рядовим солдатом на 10 років до Оренбурзьких степів. Але ні арешт, ні заслання не змогли знищити те, що він створив. «Кобзар» і «Живописна Україна» пережили імперії.',
+      history:'У реальності Шевченка заарештували 5 квітня 1847 року. Миколай I особисто написав на вироку: «Під найпильніший нагляд із забороною писати й малювати». Це найкраще свідчить того, як влада боялась його таланту.',
+    },
     end_brotherhood:{
       badge:'Кінцівка I · Голос Братства',title:'Заповіт',
       poem:`"Як умру, то поховайте\nМене на могилі,\nСеред степу широкого\nНа Вкраїні милій..."`,
@@ -839,10 +854,9 @@ function showEnding(id){
 
 Листи Братства врятовані. Мережа жива. Де-не-де у темних кімнатах люди читають його вірші й передають далі.
 
-Ці рядки переживуть імперії. Їх будуть шептати в застінках і кричати на майданах.
-
-Але зараз він просто пише. І Дніпро тихо слухає.`,
+Ці рядки переживуть імперії. Їх будуть шептати в застінках і кричати на майданах.`,
       epilogue:'Братство стало основою для майбутніх поколінь борців. Листи, що ви врятували, ходили по руках ще двадцять років після арешту Тараса у 1847 році.',
+      history:'Кирило-Мефодіївське братство існувало лише 14 місяців — з грудня 1845 по березень 1847. Всіх членів заарештували. Шевченко отримав найсуворіший вирок — 10 років солдатчини.',
     },
     end_artist:{
       badge:'Кінцівка II · Хранитель Пам\'яті',title:'Пензель і Вічність',poem:null,
@@ -854,6 +868,7 @@ function showEnding(id){
 
 «Живописна Україна» стане книгою, яку побачать тисячі.`,
       epilogue:'Альбом «Живописна Україна» видано в Петербурзі. Сорок офортів. Перше видання розкуплено за тиждень. Обличчя народу збережені для вічності.',
+      history:'Шевченко навчився офортній техніці в Петербурзькій академії мистецтв. «Живописна Україна» — перший масштабний документ побуту і природи України, створений українцем для українців.',
     },
     end_wanderer:{
       badge:'Кінцівка III · Дорога Без Кінця',title:'Вічний Мандрівник',poem:null,
@@ -865,11 +880,16 @@ function showEnding(id){
 
 Тарас бере торбу й іде далі.`,
       epilogue:'Скритність дозволила уникнути арешту на три роки довше. Ви продовжили подорож Україною, записуючи пісні й малюючи.',
+      history:'За часів заслання Шевченку заборонили писати і малювати. Він порушував заборону таємно — писав у «захалявній книжечці», яку ховав у халяві чобота.',
     },
   };
   const e=ENDS[id];
   const poem=e.poem?`<div class="end-poem">${e.poem}</div>`:'';
   const msg=S.savedMsg?`<div class="msg-saved">Ваше послання нащадкам збережено:<br>«${S.savedMsg}»</div>`:'';
+  const historyBlock=`<div style="margin:18px 0;padding:14px 16px;background:rgba(201,169,110,.08);border:1px solid var(--gold);border-radius:8px">
+    <p style="font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">📜 Це реально сталось</p>
+    <p style="font-size:.85rem;color:var(--gold-lt);line-height:1.8">${e.history}</p>
+  </div>`;
   r(`<div class="ending-wrap">${progressBar(4)}
     <div class="scene-top"><span class="game-lbl">Шевченко · Шлях Волі</span><span class="stage-tag">Кінець подорожі</span></div>
     <p class="end-badge">${e.badge}</p>
@@ -884,6 +904,7 @@ function showEnding(id){
       <div class="es"><span class="es-lbl">Свічок</span><span class="es-val">${S.litCities.length}/${ALL_CITIES.length}</span></div>
     </div>
     <div class="end-epilogue">${e.epilogue}</div>
+    ${historyBlock}
     ${msg}
     <button class="btn-restart" onclick="showTitle()">Почати знову</button>
   </div>`);
